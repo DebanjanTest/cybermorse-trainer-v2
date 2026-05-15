@@ -7,7 +7,7 @@ import { Legend } from './components/Legend';
 function App() {
   const [currentPath, setCurrentPath] = useState('');
   const [decodedMessage, setDecodedMessage] = useState('');
-  const [lastInteraction, setLastInteraction] = useState(Date.now());
+  const [lastInteraction, setLastInteraction] = useState(() => Date.now());
   
   const currentPathRef = useRef(currentPath);
   useEffect(() => {
@@ -120,7 +120,7 @@ function App() {
         lastInteraction={lastInteraction}
       />
 
-      <div className="absolute inset-0 z-10 flex items-center justify-center p-8">
+      <div className="absolute inset-0 z-10 flex items-center justify-center pt-28 pb-32 px-4">
         <MorseTreeSvg currentPath={currentPath} />
       </div>
 
