@@ -1,20 +1,24 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getAnalytics } from 'firebase/analytics';
 
-// Placeholder configuration.
-// The user will need to replace these with their actual Firebase project credentials.
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "PLACEHOLDER_API_KEY",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "PLACEHOLDER_AUTH_DOMAIN",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "PLACEHOLDER_PROJECT_ID",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "PLACEHOLDER_STORAGE_BUCKET",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "PLACEHOLDER_SENDER_ID",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "PLACEHOLDER_APP_ID"
+  apiKey: "AIzaSyA1Y_iDHQ4eo9dIkAiBjQa8wHSrZBGjqOs",
+  authDomain: "cybermorse-trainer-v2.firebaseapp.com",
+  projectId: "cybermorse-trainer-v2",
+  storageBucket: "cybermorse-trainer-v2.firebasestorage.app",
+  messagingSenderId: "274241494011",
+  appId: "1:274241494011:web:a4521b1f47df2493e6095e",
+  measurementId: "G-P7GSCDTRXK"
 };
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
+
+// Initialize Analytics (only safely on the client side)
+export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 
 // Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app);

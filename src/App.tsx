@@ -15,7 +15,7 @@ function App() {
   const [lastInteraction, setLastInteraction] = useState(() => Date.now());
   
   // Competition State
-  const { updateHighScore } = useAuth();
+  const { currentUser, signInWithGoogle, updateHighScore } = useAuth();
   const [targetTerm, setTargetTerm] = useState('');
   const [isGameActive, setIsGameActive] = useState(false);
   const [gameStartTime, setGameStartTime] = useState<number | null>(null);
@@ -234,11 +234,15 @@ function App() {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            startGame();
+            if (!currentUser) {
+              signInWithGoogle();
+            } else {
+              startGame();
+            }
           }}
           className="absolute bottom-28 z-30 px-6 py-3 rounded-full frosted-glass border-[var(--color-accent-cyan)] text-[var(--color-accent-cyan)] font-futuristic-header uppercase tracking-widest hover:bg-[rgba(0,229,255,0.1)] transition-all cursor-pointer shadow-[0_0_15px_rgba(0,229,255,0.2)]"
         >
-          {currentScore ? 'Restart Transmission' : 'Start Competition'}
+          {!currentUser ? 'Sign In with Google to Compete' : (currentScore ? 'Restart Transmission' : 'Start Competition')}
         </button>
       )}
 
