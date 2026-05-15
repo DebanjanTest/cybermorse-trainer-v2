@@ -1,15 +1,97 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #00F2FF;
-  --color-background: #050608;
-  --color-border: #1A1D23;
+  /* Dark Mode Default Theme (Vedic-Futuristic / Dashboard) */
+  --color-bg-start: #0F041C;
+  --color-bg-end: #1A0B2E;
+
+  --color-accent-magenta: #FF2D7D;
+  --color-accent-cyan: #00E5FF;
+  --color-accent-azure: #007BFF;
+
+  /* Shared primary mapping for existing components */
+  --color-primary: var(--color-accent-cyan);
+  --color-background: var(--color-bg-start);
+  --color-border: rgba(255, 255, 255, 0.2);
+}
+
+/* Light mode overrides - Note: To make this robust, we might toggle a class, but we can rely on media query or custom class. For simplicity, let's use a class strategy `.light-mode` */
+.light-mode {
+  --color-bg-start: #F0E6FA; /* Soft lavender */
+  --color-bg-end: #FFFFFF; /* Frosted white */
+
+  --color-accent-magenta: #FF66A3; /* High-saturation pastel magenta */
+  --color-accent-cyan: #00B3CC; /* High-saturation pastel cyan */
+  --color-accent-azure: #3399FF;
+
+  --color-primary: var(--color-accent-cyan);
+  --color-background: var(--color-bg-start);
+  --color-border: rgba(0, 0, 0, 0.15);
 }
 
 body {
-  background-color: var(--color-background);
+  background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));
   color: var(--color-primary);
   margin: 0;
   padding: 0;
   overflow: hidden; /* App is mostly canvas/HUD */
+  font-family: 'Inter', system-ui, -apple-system, sans-serif; /* Fallback sans-serif */
+}
+
+/* Typography styles */
+.font-futuristic-header {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+}
+
+.font-mono-code {
+  font-family: 'Fira Code', 'JetBrains Mono', monospace;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 40px;
+}
+
+.light-mode .glass-panel {
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Frosted glass for cards */
+.frosted-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+}
+
+.light-mode .frosted-glass {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Rim Lighting */
+.rim-lighting {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 45, 125, 0.5), /* Magenta top edge */
+    inset 0 -1px 0 rgba(0, 229, 255, 0.3), /* Cyan bottom edge */
+    -2px -2px 15px rgba(255, 45, 125, 0.2), /* Magenta top-left bleed */
+    2px 2px 15px rgba(0, 229, 255, 0.1);    /* Cyan bottom-right bleed */
+}
+
+/* Button Glows (Inner glow) */
+.inner-glow-azure {
+  box-shadow: inset 0 0 20px rgba(0, 123, 255, 0.8), 0 0 15px rgba(0, 123, 255, 0.4);
+}
+
+/* Utility to ensure full height */
+#root {
+  width: 100%;
+  height: 100vh;
 }

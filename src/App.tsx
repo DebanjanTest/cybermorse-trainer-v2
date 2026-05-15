@@ -91,7 +91,7 @@ function App() {
 
   return (
     <div 
-      className="w-full h-screen bg-background text-primary flex flex-col items-center justify-center relative overflow-hidden"
+      className="w-full h-screen text-primary flex flex-col items-center justify-center relative overflow-hidden bg-transparent"
       onPointerDown={(e) => {
         // Prevent default only if it's touch to avoid double firing
         if (e.pointerType === 'touch') {
@@ -104,13 +104,23 @@ function App() {
       onPointerCancel={handleInputEnd}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* 40px grid logic background */}
+      {/* Background Scenario: Out-of-focus high-tech workspace/Vedic-Futuristic landscape */}
       <div 
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
-          backgroundImage: 'linear-gradient(var(--color-primary) 1px, transparent 1px), linear-gradient(90deg, var(--color-primary) 1px, transparent 1px)',
+          background: 'radial-gradient(circle at 50% 50%, rgba(255, 45, 125, 0.1) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(0, 229, 255, 0.15) 0%, transparent 40%)',
+          filter: 'blur(20px)',
+          opacity: 0.8
+        }}
+      />
+
+      {/* Grid overlay */}
+      <div
+        className="absolute inset-0 z-0 pointer-events-none mix-blend-overlay"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
-          opacity: 0.03
+          opacity: 0.5
         }}
       />
       
@@ -120,11 +130,23 @@ function App() {
         lastInteraction={lastInteraction}
       />
 
-      <div className="absolute inset-0 z-10 flex items-center justify-center pt-28 pb-32 px-4">
+      {/* Main Panel: Large rounded container with blur and rim lighting */}
+      <div className="relative z-10 w-[95%] h-[80%] max-w-[1400px] max-h-[900px] glass-panel rim-lighting flex flex-col items-center justify-center mt-12 p-8 box-border">
         <MorseTreeSvg currentPath={currentPath} />
       </div>
 
       <Legend />
+
+      {/* Jules Command Orb */}
+      <button
+        className="absolute bottom-6 z-30 w-16 h-16 rounded-full bg-[rgba(0,123,255,0.2)] border border-[rgba(255,255,255,0.4)] flex items-center justify-center inner-glow-azure cursor-pointer hover:scale-105 transition-transform duration-200"
+        title="Jules Command Orb"
+        onClick={(e) => e.stopPropagation()} // Prevent triggering app input
+      >
+        <div className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center shadow-[0_0_10px_white]">
+          <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_5px_white]"></div>
+        </div>
+      </button>
     </div>
   )
 }

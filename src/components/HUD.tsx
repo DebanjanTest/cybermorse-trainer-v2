@@ -38,26 +38,26 @@ export function HUD({ currentPath, decodedMessage, lastInteraction }: HUDProps) 
   }, [lastInteraction, currentPath]);
 
   return (
-    <div className="absolute top-0 left-0 w-full p-6 z-20 pointer-events-none flex flex-col gap-4">
-      <div className="flex justify-between items-start">
+    <div className="absolute top-0 left-0 w-full p-6 z-20 pointer-events-none flex flex-col gap-4 max-w-[1400px] left-1/2 -translate-x-1/2">
+      <div className="flex justify-between items-start w-full frosted-glass p-4">
         <div className="flex flex-col gap-2">
-          <div className="text-xs uppercase tracking-widest text-border font-bold">Transmission Stream</div>
-          <div className="flex items-center gap-2 text-primary font-mono text-xl drop-shadow-[0_0_8px_var(--color-primary)]">
+          <div className="text-xs uppercase tracking-widest text-white/50 font-futuristic-header">Transmission Stream</div>
+          <div className="flex items-center gap-2 font-mono-code text-xl text-[var(--color-accent-magenta)] drop-shadow-[0_0_8px_var(--color-accent-magenta)]">
             <span>{decodedMessage}</span>
-            <span className="opacity-70">{currentPath}</span>
+            <span className="opacity-70 text-[var(--color-accent-cyan)] drop-shadow-[0_0_8px_var(--color-accent-cyan)]">{currentPath}</span>
             <motion.span 
               animate={{ opacity: [1, 0, 1] }} 
               transition={{ repeat: Infinity, duration: 0.8 }}
-              className="inline-block w-[10px] h-[20px] bg-primary shadow-[0_0_8px_var(--color-primary)]"
+              className="inline-block w-[10px] h-[20px] bg-[var(--color-accent-magenta)] shadow-[0_0_8px_var(--color-accent-magenta)]"
             />
           </div>
         </div>
         
         <div className="flex flex-col gap-2 w-48 text-right">
-          <div className="text-xs uppercase tracking-widest text-border font-bold">Purge Sequence</div>
-          <div className="w-full h-2 bg-border relative overflow-hidden rounded-sm">
+          <div className="text-xs uppercase tracking-widest text-white/50 font-futuristic-header">Purge Sequence</div>
+          <div className="w-full h-2 bg-white/10 relative overflow-hidden rounded-sm">
             <div 
-              className="absolute top-0 left-0 h-full bg-primary shadow-[0_0_8px_var(--color-primary)]"
+              className="absolute top-0 left-0 h-full bg-[var(--color-accent-cyan)] shadow-[0_0_8px_var(--color-accent-cyan)]"
               style={{ width: `${progress}%`, transition: 'width 0.1s linear' }}
             />
           </div>
