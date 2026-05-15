@@ -156,14 +156,15 @@ export function MorseTreeSvg({ currentPath }: { currentPath: string }) {
                 {/* Link Labels (Dot/Dash) */}
                 <text 
                   x={labelX}
-                  y={labelY}
-                  fill={isActive ? 'var(--color-primary)' : 'rgba(255,255,255,0.4)'}
-                  fontSize="16"
+                  y={labelY + 2}
+                  fill={isActive ? 'var(--color-primary)' : 'rgba(255,255,255,0.6)'}
+                  fontSize="28"
+                  fontWeight="bold"
                   fontFamily="mono"
                   textAnchor="middle"
                   className="transition-colors duration-200"
                 >
-                  {link.type === 'dot' ? '·' : '−'}
+                  {link.type === 'dot' ? '●' : '▬'}
                 </text>
               </g>
             );
@@ -175,6 +176,7 @@ export function MorseTreeSvg({ currentPath }: { currentPath: string }) {
             const isActive = currentPath === node.path || (node.path === '' && currentPath === '');
             const isRoot = node.path === '';
             const rectSize = isRoot ? 50 : 40;
+            const displayPath = node.path.replace(/\./g, '●').replace(/-/g, '▬');
 
             return (
               <g key={`node-${idx}`} transform={`translate(${node.x}, ${node.y})`}>
@@ -206,18 +208,17 @@ export function MorseTreeSvg({ currentPath }: { currentPath: string }) {
                 >
                   {node.char || '?'}
                 </motion.text>
-                {!isRoot && (
-                  <text
-                    x="0"
-                    y="32"
-                    fill="rgba(255,255,255,0.4)"
-                    fontSize="12"
-                    fontFamily="mono"
-                    textAnchor="middle"
-                  >
-                    {node.path}
-                  </text>
-                )}
+                <text
+                  x="0"
+                  y="34"
+                  fill="rgba(255,255,255,0.6)"
+                  fontSize="12"
+                  fontFamily="mono"
+                  fontWeight="bold"
+                  textAnchor="middle"
+                >
+                  {isRoot ? 'START' : displayPath}
+                </text>
               </g>
             );
           })}
