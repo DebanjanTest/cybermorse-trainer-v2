@@ -81,8 +81,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error signing in with Google:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      alert("Sign-in failed. Please ensure Firebase is correctly configured.\n\nError: " + errorMessage);
     }
   };
 
