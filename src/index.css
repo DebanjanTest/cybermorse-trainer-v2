@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #00F2FF;
+  --color-background: #050608;
+  --color-border: #1A1D23;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-primary);
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* App is mostly canvas/HUD */
+}
