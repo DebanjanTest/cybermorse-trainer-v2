@@ -144,25 +144,31 @@ export function MorseTreeSvg({ currentPath }: { currentPath: string }) {
               labelY = midY - 5;
             }
 
+            const linkColor = link.type === 'dot' ? 'var(--color-accent-cyan)' : 'var(--color-accent-magenta)';
+            const strokeColor = isActive ? linkColor : 'rgba(255,255,255,0.2)';
+            const textColor = isActive ? linkColor : 'rgba(255,255,255,0.4)';
+            const filterEffect = isActive ? `drop-shadow(0 0 5px ${linkColor})` : 'none';
+
             return (
               <g key={`link-${idx}`}>
                 <path 
                   d={pathData} 
                   fill="none" 
-                  stroke={isActive ? 'var(--color-primary)' : 'rgba(255,255,255,0.4)'}
+                  stroke={strokeColor}
                   strokeWidth={isActive ? 3 : 2}
-                  className="transition-colors duration-200"
+                  style={{ filter: filterEffect }}
+                  className="transition-all duration-300"
                 />
                 {/* Link Labels (Dot/Dash) */}
                 <text 
                   x={labelX}
                   y={labelY + 2}
-                  fill={isActive ? 'var(--color-primary)' : 'rgba(255,255,255,0.6)'}
+                  fill={textColor}
                   fontSize="28"
                   fontWeight="bold"
-                  fontFamily="mono"
                   textAnchor="middle"
-                  className="transition-colors duration-200"
+                  className="transition-colors duration-300 font-mono-code"
+                  style={{ filter: filterEffect }}
                 >
                   {link.type === 'dot' ? '●' : '▬'}
                 </text>
@@ -178,6 +184,14 @@ export function MorseTreeSvg({ currentPath }: { currentPath: string }) {
             const rectSize = isRoot ? 50 : 40;
             const displayPath = node.path.replace(/\./g, '●').replace(/-/g, '▬');
 
+            // Root is cyan, active nodes take the color of the last link they received (dot=cyan, dash=magenta).
+            const lastLinkType = node.path.endsWith('.') ? 'dot' : 'dash';
+            const nodeActiveColor = isRoot
+              ? 'var(--color-accent-cyan)'
+              : (lastLinkType === 'dot' ? 'var(--color-accent-cyan)' : 'var(--color-accent-magenta)');
+
+            const strokeColor = isActive ? nodeActiveColor : 'rgba(255,255,255,0.2)';
+
             return (
               <g key={`node-${idx}`} transform={`translate(${node.x}, ${node.y})`}>
                 <motion.rect 
@@ -185,26 +199,27 @@ export function MorseTreeSvg({ currentPath }: { currentPath: string }) {
                   y={-rectSize/2} 
                   width={rectSize} 
                   height={rectSize} 
-                  fill="var(--color-background)"
-                  stroke={isActive ? 'var(--color-primary)' : 'rgba(255,255,255,0.4)'}
+                  fill="rgba(0,0,0,0.4)"
+                  stroke={strokeColor}
                   strokeWidth={isActive ? 3 : 2}
+                  rx="8" // rounded rectangles
+                  ry="8"
                   animate={{
-                    filter: isActive ? 'drop-shadow(0 0 8px var(--color-primary))' : 'drop-shadow(0 0 0px transparent)'
+                    filter: isActive ? `drop-shadow(0 0 8px ${nodeActiveColor})` : 'drop-shadow(0 0 0px transparent)'
                   }}
                   transition={{ duration: 0.2 }}
-                  className="transition-colors duration-200"
+                  className="transition-colors duration-300"
                 />
                 <motion.text 
                   x="0" 
                   y="6" 
-                  fill={isActive ? 'var(--color-primary)' : (node.char ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)')}
+                  fill={isActive ? nodeActiveColor : (node.char ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)')}
                   fontSize={isRoot ? "24" : "18"}
-                  fontFamily="mono"
                   textAnchor="middle"
                   animate={{
-                    textShadow: isActive ? '0 0 8px var(--color-primary)' : 'none'
+                    textShadow: isActive ? `0 0 8px ${nodeActiveColor}` : 'none'
                   }}
-                  className="transition-colors duration-200 font-bold"
+                  className="transition-colors duration-300 font-bold font-mono-code"
                 >
                   {node.char || '?'}
                 </motion.text>
@@ -213,9 +228,9 @@ export function MorseTreeSvg({ currentPath }: { currentPath: string }) {
                   y="34"
                   fill="rgba(255,255,255,0.6)"
                   fontSize="12"
-                  fontFamily="mono"
                   fontWeight="bold"
                   textAnchor="middle"
+                  className="font-mono-code"
                 >
                   {isRoot ? 'START' : displayPath}
                 </text>
