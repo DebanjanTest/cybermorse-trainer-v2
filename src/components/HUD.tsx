@@ -38,8 +38,8 @@ export function HUD({ currentPath, decodedMessage, lastInteraction }: HUDProps) 
   }, [lastInteraction, currentPath]);
 
   return (
-    <div className="absolute top-0 left-0 w-full p-6 z-20 pointer-events-none flex flex-col gap-4 max-w-[1400px] left-1/2 -translate-x-1/2">
-      <div className="flex justify-between items-start w-full frosted-glass p-4">
+    <div className="w-full pointer-events-none flex flex-col gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full frosted-glass p-4 gap-4">
         <div className="flex flex-col gap-2">
           <div className="text-xs uppercase tracking-widest text-white/50 font-futuristic-header">Transmission Stream</div>
           <div className="flex items-center gap-2 font-mono-code text-xl text-[var(--color-accent-magenta)] drop-shadow-[0_0_8px_var(--color-accent-magenta)]">
@@ -53,7 +53,7 @@ export function HUD({ currentPath, decodedMessage, lastInteraction }: HUDProps) 
           </div>
         </div>
         
-        <div className="flex flex-col gap-2 w-48 text-right">
+        <div className="flex flex-col gap-2 w-full sm:w-48 sm:text-right">
           <div className="text-xs uppercase tracking-widest text-white/50 font-futuristic-header">Purge Sequence</div>
           <div className="w-full h-2 bg-white/10 relative overflow-hidden rounded-sm">
             <div 

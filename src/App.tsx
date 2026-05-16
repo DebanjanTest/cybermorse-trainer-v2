@@ -6,8 +6,18 @@ import { Legend } from './components/Legend';
 import { useAuth } from './context/AuthContext';
 import { UserProfile } from './components/UserProfile';
 import { Leaderboard } from './components/Leaderboard';
+import { WelcomeScreen } from './components/WelcomeScreen';
 
-const COMPETITION_TERMS = ["HELLO", "WORLD", "REACT", "MORSE", "CYBER", "JULES", "VITE", "HACK", "NEON", "BYTE"];
+const COMPETITION_TERMS = [
+  // Easy
+  "SOS", "HI", "FUN", "CAT", "DOG", "SUN", "CODE", "TECH", "JULES",
+  // General / Medium
+  "HELLO", "WORLD", "REACT", "MORSE", "CYBER", "VITE", "HACK", "NEON", "BYTE", "GHOST", "PIXEL",
+  // Tough
+  "ALGORITHM", "ENCRYPTION", "NETWORK", "PROTOCOL", "DATAGRAM", "BANDWIDTH", "LATENCY", "SYNCHRONIZE",
+  // Extremely Tough
+  "ASYMMETRIC", "POLYMORPHISM", "VIRTUALIZATION", "AUTHENTICATION", "TELECOMMUNICATION"
+];
 
 function App() {
   const [currentPath, setCurrentPath] = useState('');
@@ -15,7 +25,7 @@ function App() {
   const [lastInteraction, setLastInteraction] = useState(() => Date.now());
   
   // Competition State
-  const { currentUser, signInWithGoogle, updateHighScore } = useAuth();
+  const { currentUser, updateHighScore } = useAuth();
   const [targetTerm, setTargetTerm] = useState('');
   const [isGameActive, setIsGameActive] = useState(false);
   const [gameStartTime, setGameStartTime] = useState<number | null>(null);
@@ -153,13 +163,16 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGameActive, gameStartTime, decodedMessage]);
 
+  if (!currentUser) {
+    return <WelcomeScreen />;
+  }
+
   return (
     <div 
-      className="w-full h-screen text-primary flex flex-col items-center justify-center relative overflow-hidden bg-transparent"
+      className="w-full h-screen text-primary flex flex-col relative overflow-hidden bg-transparent pt-4 pb-4 px-4 sm:px-8 box-border"
       onPointerDown={(e) => {
-        // Prevent default only if it's touch to avoid double firing
         if (e.pointerType === 'touch') {
-          e.preventDefault(); // Might not be needed in React pointer events, but good to have
+          e.preventDefault();
         }
         handleInputStart();
       }}
@@ -168,7 +181,7 @@ function App() {
       onPointerCancel={handleInputEnd}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Background Scenario: Out-of-focus high-tech workspace/Vedic-Futuristic landscape */}
+      {/* Background Elements */}
       <div 
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
@@ -177,8 +190,6 @@ function App() {
           opacity: 0.8
         }}
       />
-
-      {/* Grid overlay */}
       <div
         className="absolute inset-0 z-0 pointer-events-none mix-blend-overlay"
         style={{
@@ -187,75 +198,83 @@ function App() {
           opacity: 0.5
         }}
       />
-      
-      <HUD 
-        currentPath={currentPath}
-        decodedMessage={decodedMessage}
-        lastInteraction={lastInteraction}
-      />
 
-      {/* Main Panel: Large rounded container with blur and rim lighting */}
-      <div className="relative z-10 w-[95%] h-[80%] max-w-[1400px] max-h-[900px] glass-panel rim-lighting flex flex-col items-center justify-center mt-12 p-8 box-border">
-        <MorseTreeSvg currentPath={currentPath} />
-      </div>
+      {/* Layout Container */}
+      <div className="relative z-10 w-full h-full max-w-[1600px] mx-auto flex flex-col gap-4">
 
-      {/* Competition UI Overlay */}
-      {isGameActive && (
-        <div className="absolute top-28 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 frosted-glass px-8 py-4 pointer-events-none">
-          <div className="text-white/70 text-sm uppercase tracking-widest font-futuristic-header">Target Term</div>
-          <div className="text-[var(--color-accent-magenta)] font-mono-code text-4xl font-bold tracking-[0.2em] drop-shadow-[0_0_8px_var(--color-accent-magenta)]">
-            {targetTerm}
+        {/* Top Header Row (Profile + HUD + Leaderboard toggles if needed) */}
+        <div className="w-full flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+          <UserProfile />
+          <div className="flex-1 w-full max-w-3xl">
+            <HUD
+              currentPath={currentPath}
+              decodedMessage={decodedMessage}
+              lastInteraction={lastInteraction}
+            />
+          </div>
+          <div className="hidden lg:block">
+            <Leaderboard />
           </div>
         </div>
-      )}
 
-      {currentScore !== null && !isGameActive && (
-        <div className="absolute top-28 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 frosted-glass px-8 py-4 border-[var(--color-accent-cyan)] shadow-[0_0_20px_rgba(0,229,255,0.4)] pointer-events-none">
-          <div className="text-[var(--color-accent-cyan)] text-sm uppercase tracking-widest font-futuristic-header">Transmission Complete</div>
-          <div className="text-white font-mono-code text-2xl font-bold">
-            Speed: <span className="text-[var(--color-accent-magenta)]">{currentScore}</span> BPS
+        {/* Main Center Area (Morse Tree & Competition Overlays) */}
+        <div className="flex-1 w-full flex items-center justify-center relative min-h-0">
+
+          <div className="w-full h-full glass-panel rim-lighting flex flex-col items-center justify-center p-4 sm:p-8 box-border relative overflow-hidden">
+
+            {/* Overlay for Target Word */}
+            {isGameActive && (
+              <div className="absolute top-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 frosted-glass px-8 py-4 pointer-events-none">
+                <div className="text-white/70 text-sm uppercase tracking-widest font-futuristic-header">Target Term</div>
+                <div className="text-[var(--color-accent-magenta)] font-mono-code text-2xl sm:text-4xl font-bold tracking-[0.2em] drop-shadow-[0_0_8px_var(--color-accent-magenta)]">
+                  {targetTerm}
+                </div>
+              </div>
+            )}
+
+            {/* Overlay for Completed Transmission */}
+            {currentScore !== null && !isGameActive && (
+              <div className="absolute top-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 frosted-glass px-8 py-4 border-[var(--color-accent-cyan)] shadow-[0_0_20px_rgba(0,229,255,0.4)] pointer-events-none text-center">
+                <div className="text-[var(--color-accent-cyan)] text-sm uppercase tracking-widest font-futuristic-header">Transmission Complete</div>
+                <div className="text-white font-mono-code text-xl sm:text-2xl font-bold">
+                  Speed: <span className="text-[var(--color-accent-magenta)]">{currentScore}</span> BPS
+                </div>
+              </div>
+            )}
+
+            <MorseTreeSvg currentPath={currentPath} />
           </div>
         </div>
-      )}
 
-      <Legend />
+        {/* Bottom Footer Row (Legend, Button, Jules Orb) */}
+        <div className="w-full flex flex-col sm:flex-row gap-4 items-center justify-between mt-auto">
+          <Legend />
 
-      {/* Side Panels */}
-      <div className="absolute left-6 top-1/2 -translate-y-1/2 z-30 hidden md:block">
-        <UserProfile />
-      </div>
+          {!isGameActive && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                startGame();
+              }}
+              className="px-8 py-4 rounded-full frosted-glass border-[var(--color-accent-cyan)] text-[var(--color-accent-cyan)] font-futuristic-header uppercase tracking-widest hover:bg-[rgba(0,229,255,0.1)] transition-all cursor-pointer shadow-[0_0_15px_rgba(0,229,255,0.2)] text-sm sm:text-base z-30 whitespace-nowrap"
+            >
+              {currentScore ? 'Restart Transmission' : 'Start Competition'}
+            </button>
+          )}
 
-      <div className="absolute right-6 top-1/2 -translate-y-1/2 z-30 hidden md:block">
-        <Leaderboard />
-      </div>
-
-      {/* Start Game Action */}
-      {!isGameActive && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (!currentUser) {
-              signInWithGoogle();
-            } else {
-              startGame();
-            }
-          }}
-          className="absolute bottom-28 z-30 px-6 py-3 rounded-full frosted-glass border-[var(--color-accent-cyan)] text-[var(--color-accent-cyan)] font-futuristic-header uppercase tracking-widest hover:bg-[rgba(0,229,255,0.1)] transition-all cursor-pointer shadow-[0_0_15px_rgba(0,229,255,0.2)]"
-        >
-          {!currentUser ? 'Sign In with Google to Compete' : (currentScore ? 'Restart Transmission' : 'Start Competition')}
-        </button>
-      )}
-
-      {/* Jules Command Orb */}
-      <button
-        className="absolute bottom-6 z-30 w-16 h-16 rounded-full bg-[rgba(0,123,255,0.2)] border border-[rgba(255,255,255,0.4)] flex items-center justify-center inner-glow-azure cursor-pointer hover:scale-105 transition-transform duration-200"
-        title="Jules Command Orb"
-        onClick={(e) => e.stopPropagation()} // Prevent triggering app input
-      >
-        <div className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center shadow-[0_0_10px_white]">
-          <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_5px_white]"></div>
+          {/* Jules Command Orb */}
+          <button
+            className="w-16 h-16 rounded-full bg-[rgba(0,123,255,0.2)] border border-[rgba(255,255,255,0.4)] flex items-center justify-center inner-glow-azure cursor-pointer hover:scale-105 transition-transform duration-200 shrink-0 z-30"
+            title="Jules Command Orb"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center shadow-[0_0_10px_white]">
+              <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_5px_white]"></div>
+            </div>
+          </button>
         </div>
-      </button>
+
+      </div>
     </div>
   )
 }

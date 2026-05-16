@@ -28,7 +28,7 @@ export function Leaderboard() {
   }, []);
 
   return (
-    <div className="frosted-glass p-6 w-72 flex flex-col gap-4 border-[rgba(255,45,125,0.2)] shadow-[0_0_15px_rgba(255,45,125,0.1)] h-[400px] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+    <div className="frosted-glass p-4 sm:p-6 w-full sm:w-72 flex flex-col gap-4 border-[rgba(255,45,125,0.2)] shadow-[0_0_15px_rgba(255,45,125,0.1)] sm:h-[400px] h-auto overflow-hidden shrink-0" onClick={(e) => e.stopPropagation()}>
       <div className="flex items-center justify-between border-b border-white/10 pb-2">
         <h3 className="font-futuristic-header text-lg text-white uppercase tracking-widest">Global Rank</h3>
         <span className="text-[var(--color-accent-magenta)] text-xl drop-shadow-[0_0_5px_var(--color-accent-magenta)]">🌐</span>
