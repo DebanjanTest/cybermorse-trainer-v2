@@ -1,22 +1,34 @@
-import { useState, useEffect, useRef } from 'react';
-import { decodeMorsePath } from './morse';
-import { MorseTreeSvg } from './components/MorseTreeSvg';
-import { HUD } from './components/HUD';
-import { Legend } from './components/Legend';
-import { useAuth } from './context/AuthContext';
-import { UserProfile } from './components/UserProfile';
-import { Leaderboard } from './components/Leaderboard';
+import { useState, useEffect, useRef } from "react";
+import { decodeMorsePath } from "./morse";
+import { MorseTreeSvg } from "./components/MorseTreeSvg";
+import { UserProfile } from "./components/UserProfile";
+import { HUD } from "./components/HUD";
+import { Legend } from "./components/Legend";
+import { useAuth } from "./context/AuthContext";
+import { Leaderboard } from "./components/Leaderboard";
 
-const COMPETITION_TERMS = ["HELLO", "WORLD", "REACT", "MORSE", "CYBER", "JULES", "VITE", "HACK", "NEON", "BYTE"];
+const COMPETITION_TERMS = [
+  "HELLO",
+  "WORLD",
+  "REACT",
+  "MORSE",
+  "CYBER",
+  "JULES",
+  "VITE",
+  "HACK",
+  "NEON",
+  "BYTE",
+];
 
 function App() {
-  const [currentPath, setCurrentPath] = useState('');
-  const [decodedMessage, setDecodedMessage] = useState('');
+  const [currentPath, setCurrentPath] = useState("");
+  const [decodedMessage, setDecodedMessage] = useState("");
   const [lastInteraction, setLastInteraction] = useState(() => Date.now());
-  
+
   // Competition State
-  const { currentUser, signInWithGoogle, updateHighScore } = useAuth();
-  const [targetTerm, setTargetTerm] = useState('');
+  const { currentUser, signInWithGoogle, updateHighScore, loading } =
+    useAuth();
+  const [targetTerm, setTargetTerm] = useState("");
   const [isGameActive, setIsGameActive] = useState(false);
   const [gameStartTime, setGameStartTime] = useState<number | null>(null);
   const [currentScore, setCurrentScore] = useState<number | null>(null);
@@ -37,10 +49,11 @@ function App() {
   }, [decodedMessage]);
 
   const startGame = () => {
-    const term = COMPETITION_TERMS[Math.floor(Math.random() * COMPETITION_TERMS.length)];
+    const term =
+      COMPETITION_TERMS[Math.floor(Math.random() * COMPETITION_TERMS.length)];
     setTargetTerm(term);
-    setDecodedMessage('');
-    setCurrentPath('');
+    setDecodedMessage("");
+    setCurrentPath("");
     setIsGameActive(true);
     setGameStartTime(null); // Will start on first input
     setCurrentScore(null);
@@ -58,21 +71,21 @@ function App() {
 
       if (idleTime > 2000) {
         // > 2s inactivity: clear message and reset path
-        setDecodedMessage('');
-        setCurrentPath('');
+        setDecodedMessage("");
+        setCurrentPath("");
         // Reset game start time so they can restart fresh
-        if (isGameActive && decodedMessageRef.current === '') {
+        if (isGameActive && decodedMessageRef.current === "") {
           setGameStartTime(null);
         }
-      } else if (idleTime > 1000 && currentPathRef.current !== '') {
+      } else if (idleTime > 1000 && currentPathRef.current !== "") {
         // > 1s inactivity: submit letter
         const char = decodeMorsePath(currentPathRef.current);
-        if (char !== '?') {
+        if (char !== "?") {
           setDecodedMessage((prev) => {
             const newMsg = prev + char;
 
             // Competition Win Condition
-            if (isGameActive && targetTermRef.current !== '') {
+            if (isGameActive && targetTermRef.current !== "") {
               // If they correctly matched the term
               if (newMsg === targetTermRef.current) {
                 // End game and calc score
@@ -86,13 +99,13 @@ function App() {
                 setIsGameActive(false);
               } else if (!targetTermRef.current.startsWith(newMsg)) {
                 // If they made a mistake, instantly fail/reset decoded msg to try again
-                return '';
+                return "";
               }
             }
             return newMsg;
           });
         }
-        setCurrentPath('');
+        setCurrentPath("");
       }
     }, 100);
 
@@ -107,7 +120,7 @@ function App() {
     setLastInteraction(Date.now());
 
     // Start the timer on the very first input of the game
-    if (isGameActive && !gameStartTime && decodedMessage === '') {
+    if (isGameActive && !gameStartTime && decodedMessage === "") {
       setGameStartTime(Date.now());
     }
   };
@@ -116,19 +129,20 @@ function App() {
     if (inputStartRef.current === null) return;
     const duration = Date.now() - inputStartRef.current;
     inputStartRef.current = null;
-    
+
     setLastInteraction(Date.now());
-    
+
     if (duration < 250) {
-      setCurrentPath((prev) => prev + '.');
+      setCurrentPath((prev) => prev + ".");
     } else {
-      setCurrentPath((prev) => prev + '-');
+      setCurrentPath((prev) => prev + "-");
     }
   };
 
   useEffect(() => {
+    if (!currentUser) return; // Only bind keys if logged in
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
+      if (e.code === "Space") {
         e.preventDefault();
         if (inputStartRef.current === null) {
           handleInputStart();
@@ -137,28 +151,78 @@ function App() {
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
+      if (e.code === "Space") {
         e.preventDefault();
         handleInputEnd();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isGameActive, gameStartTime, decodedMessage]);
+  }, [isGameActive, gameStartTime, decodedMessage, currentUser]);
+
+  if (loading) {
+    return (
+      <div className="w-full h-[100dvh] bg-[#0F041C] flex items-center justify-center text-[var(--color-accent-cyan)] font-mono-code">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="w-full h-[100dvh] bg-[#0F041C] flex flex-col items-center justify-center relative overflow-hidden">
+        {/* Background Overlay */}
+        <div
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 50%, rgba(255, 45, 125, 0.1) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(0, 229, 255, 0.15) 0%, transparent 40%)",
+            filter: "blur(20px)",
+            opacity: 0.8,
+          }}
+        />
+        <div
+          className="absolute inset-0 z-0 pointer-events-none mix-blend-overlay"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+            opacity: 0.5,
+          }}
+        />
+
+        <div className="relative z-10 flex flex-col items-center gap-8 p-8 max-w-md w-full glass-panel frosted-glass text-center">
+          <h1 className="text-4xl font-futuristic-header text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+            CYBER<span className="text-[var(--color-accent-cyan)]">MORSE</span>
+          </h1>
+          <p className="text-white/70 font-mono-code text-sm">
+            Authentication Required. Connect your Google account to access the
+            transmission network.
+          </p>
+          <button
+            onClick={signInWithGoogle}
+            className="w-full px-6 py-4 rounded-xl bg-white/10 border border-[var(--color-accent-cyan)] text-[var(--color-accent-cyan)] font-futuristic-header uppercase tracking-widest hover:bg-[rgba(0,229,255,0.2)] transition-all cursor-pointer shadow-[0_0_15px_rgba(0,229,255,0.2)]"
+          >
+            Sign In with Google
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div 
-      className="w-full h-[100dvh] text-primary flex flex-col items-center relative overflow-hidden bg-transparent"
+    <div
+      className="w-full h-[100dvh] text-primary flex flex-col items-center relative overflow-y-auto bg-transparent overflow-x-hidden"
       onPointerDown={(e) => {
         // Prevent default only if it's touch to avoid double firing
-        if (e.pointerType === 'touch') {
+        if (e.pointerType === "touch") {
           e.preventDefault(); // Might not be needed in React pointer events, but good to have
         }
         handleInputStart();
@@ -169,12 +233,13 @@ function App() {
       onContextMenu={(e) => e.preventDefault()}
     >
       {/* Background Scenario: Out-of-focus high-tech workspace/Vedic-Futuristic landscape */}
-      <div 
+      <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(255, 45, 125, 0.1) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(0, 229, 255, 0.15) 0%, transparent 40%)',
-          filter: 'blur(20px)',
-          opacity: 0.8
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(255, 45, 125, 0.1) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(0, 229, 255, 0.15) 0%, transparent 40%)",
+          filter: "blur(20px)",
+          opacity: 0.8,
         }}
       />
 
@@ -182,12 +247,18 @@ function App() {
       <div
         className="absolute inset-0 z-0 pointer-events-none mix-blend-overlay"
         style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)',
-          backgroundSize: '40px 40px',
-          opacity: 0.5
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+          opacity: 0.5,
         }}
       />
-      
+
+      {/* Side Panels */}
+      <div className="absolute left-6 top-1/2 -translate-y-1/2 z-30 hidden lg:block">
+        <UserProfile />
+      </div>
+
       {/* Top Header Section */}
       <div className="w-full max-w-[1400px] z-20 flex flex-col items-center gap-4 pt-6 px-4 md:px-8">
         <HUD
@@ -200,7 +271,9 @@ function App() {
         {/* Competition UI Overlay */}
         {isGameActive && (
           <div className="flex flex-col items-center gap-2 frosted-glass px-8 py-4 pointer-events-none">
-            <div className="text-white/70 text-sm uppercase tracking-widest font-futuristic-header">Target Term</div>
+            <div className="text-white/70 text-sm uppercase tracking-widest font-futuristic-header">
+              Target Term
+            </div>
             <div className="text-[var(--color-accent-magenta)] font-mono-code text-4xl font-bold tracking-[0.2em] drop-shadow-[0_0_8px_var(--color-accent-magenta)]">
               {targetTerm}
             </div>
@@ -209,24 +282,26 @@ function App() {
 
         {currentScore !== null && !isGameActive && (
           <div className="flex flex-col items-center gap-2 frosted-glass px-8 py-4 border-[var(--color-accent-cyan)] shadow-[0_0_20px_rgba(0,229,255,0.4)] pointer-events-none">
-            <div className="text-[var(--color-accent-cyan)] text-sm uppercase tracking-widest font-futuristic-header">Transmission Complete</div>
+            <div className="text-[var(--color-accent-cyan)] text-sm uppercase tracking-widest font-futuristic-header">
+              Transmission Complete
+            </div>
             <div className="text-white font-mono-code text-2xl font-bold text-center">
-              Speed: <span className="text-[var(--color-accent-magenta)]">{currentScore}</span> BPS
+              Speed:{" "}
+              <span className="text-[var(--color-accent-magenta)]">
+                {currentScore}
+              </span>{" "}
+              BPS
             </div>
           </div>
         )}
       </div>
 
       {/* Main Panel: Large rounded container with blur and rim lighting */}
-      <div className="relative z-10 w-[95%] md:w-[90%] flex-1 min-h-0 max-w-[1400px] glass-panel rim-lighting flex flex-col items-center justify-center my-4 p-4 md:p-8 box-border">
+      <div className="relative z-10 w-[95%] md:w-[90%] flex-1 min-h-[800px] max-w-[1400px] glass-panel rim-lighting flex flex-col items-start justify-start my-4 p-4 md:p-8 box-border overflow-auto shrink-0">
         <MorseTreeSvg currentPath={currentPath} />
       </div>
 
       {/* Side Panels */}
-      <div className="absolute left-6 top-1/2 -translate-y-1/2 z-30 hidden lg:block">
-        <UserProfile />
-      </div>
-
       <div className="absolute right-6 top-1/2 -translate-y-1/2 z-30 hidden lg:block">
         <Leaderboard />
       </div>
@@ -238,15 +313,11 @@ function App() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              if (!currentUser) {
-                signInWithGoogle();
-              } else {
-                startGame();
-              }
+              startGame();
             }}
             className="w-full max-w-sm px-6 py-3 rounded-full frosted-glass border-[var(--color-accent-cyan)] text-[var(--color-accent-cyan)] font-futuristic-header uppercase tracking-widest hover:bg-[rgba(0,229,255,0.1)] transition-all cursor-pointer shadow-[0_0_15px_rgba(0,229,255,0.2)] text-sm text-center"
           >
-            {!currentUser ? 'Sign In with Google to Compete' : (currentScore ? 'Restart Transmission' : 'Start Competition')}
+            {currentScore ? "Restart Transmission" : "Start Competition"}
           </button>
         )}
 
@@ -262,7 +333,7 @@ function App() {
         </button>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
