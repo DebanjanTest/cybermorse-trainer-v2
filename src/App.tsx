@@ -155,7 +155,7 @@ function App() {
 
   return (
     <div 
-      className="w-full h-screen text-primary flex flex-col items-center justify-center relative overflow-hidden bg-transparent"
+      className="w-full h-[100dvh] text-primary flex flex-col items-center relative overflow-hidden bg-transparent"
       onPointerDown={(e) => {
         // Prevent default only if it's touch to avoid double firing
         if (e.pointerType === 'touch') {
@@ -188,74 +188,79 @@ function App() {
         }}
       />
       
-      <HUD 
-        currentPath={currentPath}
-        decodedMessage={decodedMessage}
-        lastInteraction={lastInteraction}
-      />
+      {/* Top Header Section */}
+      <div className="w-full max-w-[1400px] z-20 flex flex-col items-center gap-4 pt-6 px-4 md:px-8">
+        <HUD
+          currentPath={currentPath}
+          decodedMessage={decodedMessage}
+          lastInteraction={lastInteraction}
+        />
+        <Legend />
+
+        {/* Competition UI Overlay */}
+        {isGameActive && (
+          <div className="flex flex-col items-center gap-2 frosted-glass px-8 py-4 pointer-events-none">
+            <div className="text-white/70 text-sm uppercase tracking-widest font-futuristic-header">Target Term</div>
+            <div className="text-[var(--color-accent-magenta)] font-mono-code text-4xl font-bold tracking-[0.2em] drop-shadow-[0_0_8px_var(--color-accent-magenta)]">
+              {targetTerm}
+            </div>
+          </div>
+        )}
+
+        {currentScore !== null && !isGameActive && (
+          <div className="flex flex-col items-center gap-2 frosted-glass px-8 py-4 border-[var(--color-accent-cyan)] shadow-[0_0_20px_rgba(0,229,255,0.4)] pointer-events-none">
+            <div className="text-[var(--color-accent-cyan)] text-sm uppercase tracking-widest font-futuristic-header">Transmission Complete</div>
+            <div className="text-white font-mono-code text-2xl font-bold text-center">
+              Speed: <span className="text-[var(--color-accent-magenta)]">{currentScore}</span> BPS
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Main Panel: Large rounded container with blur and rim lighting */}
-      <div className="relative z-10 w-[95%] h-[80%] max-w-[1400px] max-h-[900px] glass-panel rim-lighting flex flex-col items-center justify-center mt-12 p-8 box-border">
+      <div className="relative z-10 w-[95%] md:w-[90%] flex-1 min-h-0 max-w-[1400px] glass-panel rim-lighting flex flex-col items-center justify-center my-4 p-4 md:p-8 box-border">
         <MorseTreeSvg currentPath={currentPath} />
       </div>
 
-      {/* Competition UI Overlay */}
-      {isGameActive && (
-        <div className="absolute top-28 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 frosted-glass px-8 py-4 pointer-events-none">
-          <div className="text-white/70 text-sm uppercase tracking-widest font-futuristic-header">Target Term</div>
-          <div className="text-[var(--color-accent-magenta)] font-mono-code text-4xl font-bold tracking-[0.2em] drop-shadow-[0_0_8px_var(--color-accent-magenta)]">
-            {targetTerm}
-          </div>
-        </div>
-      )}
-
-      {currentScore !== null && !isGameActive && (
-        <div className="absolute top-28 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 frosted-glass px-8 py-4 border-[var(--color-accent-cyan)] shadow-[0_0_20px_rgba(0,229,255,0.4)] pointer-events-none">
-          <div className="text-[var(--color-accent-cyan)] text-sm uppercase tracking-widest font-futuristic-header">Transmission Complete</div>
-          <div className="text-white font-mono-code text-2xl font-bold">
-            Speed: <span className="text-[var(--color-accent-magenta)]">{currentScore}</span> BPS
-          </div>
-        </div>
-      )}
-
-      <Legend />
-
       {/* Side Panels */}
-      <div className="absolute left-6 top-1/2 -translate-y-1/2 z-30 hidden md:block">
+      <div className="absolute left-6 top-1/2 -translate-y-1/2 z-30 hidden lg:block">
         <UserProfile />
       </div>
 
-      <div className="absolute right-6 top-1/2 -translate-y-1/2 z-30 hidden md:block">
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 z-30 hidden lg:block">
         <Leaderboard />
       </div>
 
-      {/* Start Game Action */}
-      {!isGameActive && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (!currentUser) {
-              signInWithGoogle();
-            } else {
-              startGame();
-            }
-          }}
-          className="absolute bottom-28 z-30 px-6 py-3 rounded-full frosted-glass border-[var(--color-accent-cyan)] text-[var(--color-accent-cyan)] font-futuristic-header uppercase tracking-widest hover:bg-[rgba(0,229,255,0.1)] transition-all cursor-pointer shadow-[0_0_15px_rgba(0,229,255,0.2)]"
-        >
-          {!currentUser ? 'Sign In with Google to Compete' : (currentScore ? 'Restart Transmission' : 'Start Competition')}
-        </button>
-      )}
+      {/* Bottom Actions Section */}
+      <div className="w-full z-30 flex flex-col items-center gap-4 pb-6 px-4">
+        {/* Start Game Action */}
+        {!isGameActive && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!currentUser) {
+                signInWithGoogle();
+              } else {
+                startGame();
+              }
+            }}
+            className="w-full max-w-sm px-6 py-3 rounded-full frosted-glass border-[var(--color-accent-cyan)] text-[var(--color-accent-cyan)] font-futuristic-header uppercase tracking-widest hover:bg-[rgba(0,229,255,0.1)] transition-all cursor-pointer shadow-[0_0_15px_rgba(0,229,255,0.2)] text-sm text-center"
+          >
+            {!currentUser ? 'Sign In with Google to Compete' : (currentScore ? 'Restart Transmission' : 'Start Competition')}
+          </button>
+        )}
 
-      {/* Jules Command Orb */}
-      <button
-        className="absolute bottom-6 z-30 w-16 h-16 rounded-full bg-[rgba(0,123,255,0.2)] border border-[rgba(255,255,255,0.4)] flex items-center justify-center inner-glow-azure cursor-pointer hover:scale-105 transition-transform duration-200"
-        title="Jules Command Orb"
-        onClick={(e) => e.stopPropagation()} // Prevent triggering app input
-      >
-        <div className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center shadow-[0_0_10px_white]">
-          <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_5px_white]"></div>
-        </div>
-      </button>
+        {/* Jules Command Orb */}
+        <button
+          className="w-14 h-14 rounded-full bg-[rgba(0,123,255,0.2)] border border-[rgba(255,255,255,0.4)] flex items-center justify-center inner-glow-azure cursor-pointer hover:scale-105 transition-transform duration-200 shrink-0"
+          title="Jules Command Orb"
+          onClick={(e) => e.stopPropagation()} // Prevent triggering app input
+        >
+          <div className="w-6 h-6 rounded-full border-2 border-white flex items-center justify-center shadow-[0_0_10px_white]">
+            <div className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_5px_white]"></div>
+          </div>
+        </button>
+      </div>
     </div>
   )
 }

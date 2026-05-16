@@ -112,10 +112,10 @@ export function MorseTreeSvg({ currentPath }: { currentPath: string }) {
   }, [isPortrait, svgWidth, svgHeight]);
 
   return (
-    <div className="relative w-full h-full flex justify-center items-center pointer-events-none">
+    <div className="relative w-full h-full flex justify-center items-center pointer-events-none overflow-hidden">
       <svg 
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-        className="w-full max-w-[1200px] h-auto drop-shadow-lg"
+        className="w-full h-full max-w-[1200px] max-h-full drop-shadow-lg"
         preserveAspectRatio="xMidYMid meet"
       >
         <g className="links">
