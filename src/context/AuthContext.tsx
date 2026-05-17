@@ -81,8 +81,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error signing in with Google:", error);
       const err = error as { code?: string; message?: string };
       if (err?.code === "auth/unauthorized-domain") {
+        const domain =
+          typeof window !== "undefined"
+            ? window.location.hostname
+            : "this application";
         alert(
-          "Sign-in failed: Unauthorized Domain.\n\nPlease go to your Firebase Console -> Authentication -> Settings -> Authorized Domains, and add the domain of this application to the list.",
+          `Sign-in failed: Unauthorized Domain.\n\nPlease go to your Firebase Console -> Authentication -> Settings -> Authorized Domains, and add the domain "${domain}" to the list.`,
         );
       } else {
         const errorMessage =

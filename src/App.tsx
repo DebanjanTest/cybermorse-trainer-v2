@@ -26,12 +26,12 @@ function App() {
   const [lastInteraction, setLastInteraction] = useState(() => Date.now());
 
   // Competition State
-  const { currentUser, signInWithGoogle, updateHighScore, loading } =
-    useAuth();
+  const { currentUser, signInWithGoogle, updateHighScore, loading } = useAuth();
   const [targetTerm, setTargetTerm] = useState("");
   const [isGameActive, setIsGameActive] = useState(false);
   const [gameStartTime, setGameStartTime] = useState<number | null>(null);
   const [currentScore, setCurrentScore] = useState<number | null>(null);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const currentPathRef = useRef(currentPath);
   useEffect(() => {
@@ -254,9 +254,35 @@ function App() {
         }}
       />
 
-      {/* Side Panels */}
-      <div className="absolute left-6 top-1/2 -translate-y-1/2 z-30 hidden lg:block">
-        <UserProfile />
+      {/* Floating Header Profile */}
+      <div className="absolute top-4 right-4 z-50">
+        <div className="relative">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowProfileMenu(!showProfileMenu);
+            }}
+            className="w-12 h-12 rounded-full overflow-hidden border-2 border-[var(--color-accent-cyan)] shadow-[0_0_10px_rgba(0,229,255,0.5)] cursor-pointer hover:scale-105 transition-transform bg-black/50 flex items-center justify-center"
+          >
+            {currentUser.photoURL ? (
+              <img
+                src={currentUser.photoURL}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-[var(--color-accent-cyan)] font-futuristic-header text-lg">
+                {currentUser.displayName?.charAt(0) || "U"}
+              </span>
+            )}
+          </button>
+
+          {showProfileMenu && (
+            <div className="absolute top-14 right-0 z-50">
+              <UserProfile />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Top Header Section */}
