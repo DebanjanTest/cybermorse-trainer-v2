@@ -1,13 +1,9 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import type { ReactNode } from 'react';
-import {
-  onAuthStateChanged,
-  signInWithPopup,
-  signOut
-} from 'firebase/auth';
-import type { User } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, googleProvider, db } from '../firebase';
+import { createContext, useContext, useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
+import type { User } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, googleProvider, db } from "../firebase";
 
 export interface UserProfileData {
   uid: string;
@@ -40,7 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Sync profile data from Firestore
   const fetchOrInitializeUserProfile = async (user: User) => {
-    const userRef = doc(db, 'users', user.uid);
+    const userRef = doc(db, "users", user.uid);
     const docSnap = await getDoc(userRef);
 
     if (docSnap.exists()) {
@@ -52,7 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
-        username: user.displayName || 'Anonymous Player',
+        username: user.displayName || "Anonymous Player",
         bps: 0,
       };
       await setDoc(userRef, newProfile);
@@ -83,8 +79,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await signInWithPopup(auth, googleProvider);
     } catch (error: unknown) {
       console.error("Error signing in with Google:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      alert("Sign-in failed. Please ensure Firebase is correctly configured.\n\nError: " + errorMessage);
+      const err = error as { code?: string; message?: string };
+      if (err?.code === "auth/unauthorized-domain") {
+        alert(
+          "Sign-in failed: Unauthorized Domain.\n\nPlease go to your Firebase Console -> Authentication -> Settings -> Authorized Domains, and add the domain of this application to the list.",
+        );
+      } else {
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        alert(
+          "Sign-in failed. Please ensure Firebase is correctly configured.\n\nError: " +
+            errorMessage,
+        );
+      }
     }
   };
 
@@ -99,8 +106,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const updateUsername = async (newUsername: string) => {
     if (!currentUser || !userProfile) return;
 
-    const userRef = doc(db, 'users', currentUser.uid);
-    await setDoc(userRef, { ...userProfile, username: newUsername }, { merge: true });
+    const userRef = doc(db, "users", currentUser.uid);
+    await setDoc(
+      userRef,
+      { ...userProfile, username: newUsername },
+      { merge: true },
+    );
     setUserProfile({ ...userProfile, username: newUsername });
   };
 
@@ -109,22 +120,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // Only update if the new score is strictly better
     if (newBps > userProfile.bps) {
-      const userRef = doc(db, 'users', currentUser.uid);
+      const userRef = doc(db, "users", currentUser.uid);
       await setDoc(userRef, { ...userProfile, bps: newBps }, { merge: true });
       setUserProfile({ ...userProfile, bps: newBps });
     }
   };
 
   return (
-    <AuthContext.Provider value={{
-      currentUser,
-      userProfile,
-      signInWithGoogle,
-      logout,
-      updateUsername,
-      updateHighScore,
-      loading
-    }}>
+    <AuthContext.Provider
+      value={{
+        currentUser,
+        userProfile,
+        signInWithGoogle,
+        logout,
+        updateUsername,
+        updateHighScore,
+        loading,
+      }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   );
