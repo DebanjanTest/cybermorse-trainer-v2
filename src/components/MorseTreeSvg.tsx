@@ -112,7 +112,7 @@ export function MorseTreeSvg({ currentPath }: { currentPath: string }) {
   }, [isPortrait, svgWidth, svgHeight]);
 
   return (
-    <div className="relative w-full h-full flex justify-center items-center pointer-events-none overflow-visible pt-10">
+    <div className="relative w-full h-full flex justify-center items-center pointer-events-none overflow-visible">
       <svg 
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         className="w-full h-full max-w-[1200px] drop-shadow-lg"

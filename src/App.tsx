@@ -219,7 +219,7 @@ function App() {
 
   return (
     <div
-      className="w-full h-[100dvh] text-primary flex flex-col items-center relative overflow-y-auto bg-transparent overflow-x-hidden"
+      className="w-full h-[100dvh] text-primary flex flex-col items-center relative overflow-hidden bg-transparent"
       onPointerDown={(e) => {
         // Prevent default only if it's touch to avoid double firing
         if (e.pointerType === "touch") {
@@ -323,7 +323,7 @@ function App() {
       </div>
 
       {/* Main Panel: Large rounded container with blur and rim lighting */}
-      <div className="relative z-10 w-[95%] md:w-[90%] flex-1 min-h-[800px] max-w-[1400px] glass-panel rim-lighting flex flex-col items-start justify-start my-4 p-4 md:p-8 box-border overflow-auto shrink-0">
+      <div className="relative z-10 w-full md:w-[90%] flex-1 min-h-0 md:min-h-[800px] max-w-[1400px] glass-panel rim-lighting flex flex-col items-start justify-start border-y-0 md:border-y md:my-4 md:p-8 box-border overflow-hidden shrink shrink-0 md:rounded-[40px] rounded-none bg-transparent">
         <MorseTreeSvg currentPath={currentPath} />
       </div>
 
