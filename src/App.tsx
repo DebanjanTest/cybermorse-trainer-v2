@@ -10,21 +10,20 @@ import { WelcomeScreen } from './components/WelcomeScreen';
 
 const COMPETITION_TERMS = [
   // Easy
-  "SOS", "HI", "FUN", "CAT", "DOG", "SUN", "CODE", "TECH", "JULES",
+  'SOS', 'HI', 'FUN', 'CAT', 'DOG', 'SUN', 'CODE', 'TECH', 'JULES',
   // General / Medium
-  "HELLO", "WORLD", "REACT", "MORSE", "CYBER", "VITE", "HACK", "NEON", "BYTE", "GHOST", "PIXEL",
+  'HELLO', 'WORLD', 'REACT', 'MORSE', 'CYBER', 'VITE', 'HACK', 'NEON', 'BYTE', 'GHOST', 'PIXEL',
   // Tough
-  "ALGORITHM", "ENCRYPTION", "NETWORK", "PROTOCOL", "DATAGRAM", "BANDWIDTH", "LATENCY", "SYNCHRONIZE",
+  'ALGORITHM', 'ENCRYPTION', 'NETWORK', 'PROTOCOL', 'DATAGRAM', 'BANDWIDTH', 'LATENCY', 'SYNCHRONIZE',
   // Extremely Tough
-  "ASYMMETRIC", "POLYMORPHISM", "VIRTUALIZATION", "AUTHENTICATION", "TELECOMMUNICATION"
+  'ASYMMETRIC', 'POLYMORPHISM', 'VIRTUALIZATION', 'AUTHENTICATION', 'TELECOMMUNICATION'
 ];
 
 function App() {
   const [currentPath, setCurrentPath] = useState('');
   const [decodedMessage, setDecodedMessage] = useState('');
   const [lastInteraction, setLastInteraction] = useState(() => Date.now());
-  
-  // Competition State
+
   const { currentUser, updateHighScore } = useAuth();
   const [targetTerm, setTargetTerm] = useState('');
   const [isGameActive, setIsGameActive] = useState(false);
@@ -52,7 +51,7 @@ function App() {
     setDecodedMessage('');
     setCurrentPath('');
     setIsGameActive(true);
-    setGameStartTime(null); // Will start on first input
+    setGameStartTime(null);
     setCurrentScore(null);
   };
 
@@ -67,25 +66,20 @@ function App() {
       const idleTime = now - lastInteractionRef.current;
 
       if (idleTime > 2000) {
-        // > 2s inactivity: clear message and reset path
         setDecodedMessage('');
         setCurrentPath('');
-        // Reset game start time so they can restart fresh
+
         if (isGameActive && decodedMessageRef.current === '') {
           setGameStartTime(null);
         }
       } else if (idleTime > 1000 && currentPathRef.current !== '') {
-        // > 1s inactivity: submit letter
         const char = decodeMorsePath(currentPathRef.current);
         if (char !== '?') {
           setDecodedMessage((prev) => {
             const newMsg = prev + char;
 
-            // Competition Win Condition
             if (isGameActive && targetTermRef.current !== '') {
-              // If they correctly matched the term
               if (newMsg === targetTermRef.current) {
-                // End game and calc score
                 if (gameStartTime) {
                   const durationInSecs = (Date.now() - gameStartTime) / 1000;
                   const chars = targetTermRef.current.length;
@@ -95,7 +89,6 @@ function App() {
                 }
                 setIsGameActive(false);
               } else if (!targetTermRef.current.startsWith(newMsg)) {
-                // If they made a mistake, instantly fail/reset decoded msg to try again
                 return '';
               }
             }
@@ -109,14 +102,12 @@ function App() {
     return () => clearInterval(interval);
   }, [isGameActive, gameStartTime, updateHighScore]);
 
-  // Input Handling
   const inputStartRef = useRef<number | null>(null);
 
   const handleInputStart = () => {
     inputStartRef.current = Date.now();
     setLastInteraction(Date.now());
 
-    // Start the timer on the very first input of the game
     if (isGameActive && !gameStartTime && decodedMessage === '') {
       setGameStartTime(Date.now());
     }
@@ -126,9 +117,9 @@ function App() {
     if (inputStartRef.current === null) return;
     const duration = Date.now() - inputStartRef.current;
     inputStartRef.current = null;
-    
+
     setLastInteraction(Date.now());
-    
+
     if (duration < 250) {
       setCurrentPath((prev) => prev + '.');
     } else {
@@ -160,7 +151,6 @@ function App() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGameActive, gameStartTime, decodedMessage]);
 
   if (!currentUser) {
@@ -168,7 +158,7 @@ function App() {
   }
 
   return (
-    <div 
+    <div
       className="w-full h-screen text-primary flex flex-col relative overflow-hidden bg-transparent pt-4 pb-4 px-4 sm:px-8 box-border"
       onPointerDown={(e) => {
         if (e.pointerType === 'touch') {
@@ -181,13 +171,12 @@ function App() {
       onPointerCancel={handleInputEnd}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Background Elements */}
-      <div 
+      <div
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
           background: 'radial-gradient(circle at 50% 50%, rgba(255, 45, 125, 0.1) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(0, 229, 255, 0.15) 0%, transparent 40%)',
           filter: 'blur(20px)',
-          opacity: 0.8
+          opacity: 0.8,
         }}
       />
       <div
@@ -195,34 +184,23 @@ function App() {
         style={{
           backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
-          opacity: 0.5
+          opacity: 0.5,
         }}
       />
 
-      {/* Layout Container */}
       <div className="relative z-10 w-full h-full max-w-[1600px] mx-auto flex flex-col gap-4">
-
-        {/* Top Header Row (Profile + HUD + Leaderboard toggles if needed) */}
         <div className="w-full flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
           <UserProfile />
           <div className="flex-1 w-full max-w-3xl">
-            <HUD
-              currentPath={currentPath}
-              decodedMessage={decodedMessage}
-              lastInteraction={lastInteraction}
-            />
+            <HUD currentPath={currentPath} decodedMessage={decodedMessage} lastInteraction={lastInteraction} />
           </div>
           <div className="hidden lg:block">
             <Leaderboard />
           </div>
         </div>
 
-        {/* Main Center Area (Morse Tree & Competition Overlays) */}
         <div className="flex-1 w-full flex items-center justify-center relative min-h-0">
-
           <div className="w-full h-full glass-panel rim-lighting flex flex-col items-center justify-center p-4 sm:p-8 box-border relative overflow-hidden">
-
-            {/* Overlay for Target Word */}
             {isGameActive && (
               <div className="absolute top-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 frosted-glass px-8 py-4 pointer-events-none">
                 <div className="text-white/70 text-sm uppercase tracking-widest font-futuristic-header">Target Term</div>
@@ -232,7 +210,6 @@ function App() {
               </div>
             )}
 
-            {/* Overlay for Completed Transmission */}
             {currentScore !== null && !isGameActive && (
               <div className="absolute top-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 frosted-glass px-8 py-4 border-[var(--color-accent-cyan)] shadow-[0_0_20px_rgba(0,229,255,0.4)] pointer-events-none text-center">
                 <div className="text-[var(--color-accent-cyan)] text-sm uppercase tracking-widest font-futuristic-header">Transmission Complete</div>
@@ -246,7 +223,6 @@ function App() {
           </div>
         </div>
 
-        {/* Bottom Footer Row (Legend, Button, Jules Orb) */}
         <div className="w-full flex flex-col sm:flex-row gap-4 items-center justify-between mt-auto">
           <Legend />
 
@@ -262,7 +238,6 @@ function App() {
             </button>
           )}
 
-          {/* Jules Command Orb */}
           <button
             className="w-16 h-16 rounded-full bg-[rgba(0,123,255,0.2)] border border-[rgba(255,255,255,0.4)] flex items-center justify-center inner-glow-azure cursor-pointer hover:scale-105 transition-transform duration-200 shrink-0 z-30"
             title="Jules Command Orb"
@@ -273,10 +248,9 @@ function App() {
             </div>
           </button>
         </div>
-
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
