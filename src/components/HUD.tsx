@@ -38,22 +38,22 @@ export function HUD({ currentPath, decodedMessage, lastInteraction }: HUDProps) 
   }, [lastInteraction, currentPath]);
 
   return (
-    <div className="w-full z-20 pointer-events-none flex flex-col gap-4 max-w-[1400px]">
-      <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start w-full frosted-glass p-4 gap-4 sm:gap-0">
-        <div className="flex flex-col gap-2 items-center sm:items-start text-center sm:text-left w-full sm:w-auto">
-          <div className="text-xs uppercase tracking-widest text-white/50 font-futuristic-header break-words">Transmission Stream</div>
-          <div className="flex items-center gap-2 font-mono-code text-xl text-[var(--color-accent-magenta)] drop-shadow-[0_0_8px_var(--color-accent-magenta)] flex-wrap justify-center sm:justify-start">
-            <span className="break-all">{decodedMessage}</span>
-            <span className="opacity-70 text-[var(--color-accent-cyan)] drop-shadow-[0_0_8px_var(--color-accent-cyan)] break-all">{currentPath}</span>
+    <div className="w-full pointer-events-none flex flex-col gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full frosted-glass p-4 gap-4">
+        <div className="flex flex-col gap-2">
+          <div className="text-xs uppercase tracking-widest text-white/50 font-futuristic-header">Transmission Stream</div>
+          <div className="flex items-center gap-2 font-mono-code text-xl text-[var(--color-accent-magenta)] drop-shadow-[0_0_8px_var(--color-accent-magenta)]">
+            <span>{decodedMessage}</span>
+            <span className="opacity-70 text-[var(--color-accent-cyan)] drop-shadow-[0_0_8px_var(--color-accent-cyan)]">{currentPath}</span>
             <motion.span 
               animate={{ opacity: [1, 0, 1] }} 
               transition={{ repeat: Infinity, duration: 0.8 }}
-              className="inline-block w-[10px] h-[20px] bg-[var(--color-accent-magenta)] shadow-[0_0_8px_var(--color-accent-magenta)] shrink-0"
+              className="inline-block w-[10px] h-[20px] bg-[var(--color-accent-magenta)] shadow-[0_0_8px_var(--color-accent-magenta)]"
             />
           </div>
         </div>
         
-        <div className="flex flex-col gap-2 w-full sm:w-48 text-center sm:text-right shrink-0">
+        <div className="flex flex-col gap-2 w-full sm:w-48 sm:text-right">
           <div className="text-xs uppercase tracking-widest text-white/50 font-futuristic-header">Purge Sequence</div>
           <div className="w-full h-2 bg-white/10 relative overflow-hidden rounded-sm">
             <div 
